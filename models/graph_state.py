@@ -1,0 +1,16 @@
+from langchain.agents import AgentState
+from langchain.agents.middleware import AgentMiddleware
+from typing import Any
+
+class GraphState(AgentState):
+    """State management for graph agents."""
+    file_path: str
+    file_content: str
+    parsed_layout: dict
+
+
+
+class GraphStateMiddleware(AgentMiddleware):
+    """Middleware for managing GraphState."""
+    state_schema = GraphState
+    tools = []
