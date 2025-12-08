@@ -1,0 +1,26 @@
+Name;Email;Age;Department;Salary;StartDate;Status
+John Smith;john.smith@company.com;32;Engineering;85000;2020-01-15;Active
+Sarah Johnson;sarah.johnson@company.com;28;Marketing;72000;2021-03-22;Active
+Michael Brown;michael.brown@company.com;45;Finance;95000;2018-06-10;Active
+Emily Davis;emily.davis@company.com;31;HR;68000;2019-11-05;Active
+David Wilson;david.wilson@company.com;38;Engineering;90000;2019-02-18;Active
+Jessica Garcia;jessica.garcia@company.com;26;Marketing;65000;2022-05-12;Active
+Robert Martinez;robert.martinez@company.com;52;Finance;105000;2015-08-30;Active
+Amanda Taylor;amanda.taylor@company.com;29;Engineering;78000;2021-09-01;Active
+Christopher Lee;christopher.lee@company.com;35;Sales;82000;2020-04-14;Inactive
+Michelle White;michelle.white@company.com;41;HR;75000;2017-12-11;Active
+Daniel Harris;daniel.harris@company.com;33;Engineering;86000;2020-07-20;Active
+Lauren Anderson;lauren.anderson@company.com;27;Marketing;70000;2022-01-10;Active
+James Thomas;james.thomas@company.com;48;Finance;102000;2016-09-25;Active
+Ashley Jackson;ashley.jackson@company.com;30;Engineering;80000;2021-02-08;Active
+Ryan White;ryan.white@company.com;34;Sales;79000;2019-10-15;Active
+Olivia Harris;olivia.harris@company.com;25;Marketing;64000;2022-06-13;Active
+Matthew Martin;matthew.martin@company.com;50;Finance;108000;2014-03-20;Active
+Sophia Robinson;sophia.robinson@company.com;28;HR;69000;2021-08-09;Active
+Andrew Clark;andrew.clark@company.com;36;Engineering;88000;2019-05-17;Active
+Emma Rodriguez;emma.rodriguez@company.com;29;Sales;76000;2020-11-23;Active
+Joshua Lewis;joshua.lewis@company.com;39;Finance;98000;2018-04-12;Active
+Ava Lee;ava.lee@company.com;26;Engineering;77000;2022-02-14;Active
+Ethan Walker;ethan.walker@company.com;43;Sales;84000;2017-07-19;Inactive
+Isabella Hall;isabella.hall@company.com;31;Marketing;71000;2020-09-06;Active
+Mason Young;mason.young@company.com;37;Finance;100000;2018-01-08;Active
