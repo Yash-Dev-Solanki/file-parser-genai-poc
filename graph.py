@@ -7,8 +7,17 @@ from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 from langchain.tools import tool, ToolRuntime
 from models.graph_state import GraphState, GraphStateMiddleware
-from file_readers import read_csv_raw, read_csv_tool
+from file_readers import (
+    read_csv_raw, 
+    read_csv_tool,
+    read_flat_file,
+    read_flat_file_tool,
+    read_xml_file_raw,
+    read_xml_tool
+)
 from agents.delimiter_parser_agent import call_delimiter_parser_tool
+from agents.positional_parser_agent import call_layout_parser_agent_tool
+from agents.iso20022_parser_agent import call_iso20022_parser_tool
 
 llm_model = ChatOpenAI(temperature=0, model_name="gpt-4o", api_key= SecretStr(os.getenv("OPENAI_API_KEY", "")))
 system_prompt = f"""
@@ -22,7 +31,7 @@ These rules are as follows:
 
 
 
-Supported file formats: ['csv',]
+Supported file formats: ['csv', 'txt', 'xml']
 
 Supported parsing agents: [
     {{
@@ -30,7 +39,19 @@ Supported parsing agents: [
         "file_type": "csv",
         "description": "Parses delimited text files such as CSV files into structured JSON format. Supports a set of common delimiters including commas, tabs, and semicolons."
         "sample_input_file_content": {read_csv_raw("sample_files/delimiter_parser_agent_sample_input.csv")},
+    }}
+    {{
+        "tool_name": "layout_parser",
+        "file_type": "txt",
+        "description": "Parses positional text files into structured JSON format based on predefined layout structures stored in the database."
+        "sample_input_file_content": {(read_flat_file("sample_files/positional_parser_agent_sample_input.txt"))},
     }},
+    {{
+        "tool_name": "iso20022_parser",
+        "file_type": "xml",
+        "description": "Parses ISO 20022 XML files into structured JSON format by decoding the XML structure and normalizing the data according to ISO 20022 standards."
+        "sample_input_file_content": {read_xml_file_raw("sample_files/iso_parser_agent_sample_input.xml")},
+    }}
 ]"""
 
 
@@ -40,7 +61,10 @@ def create_json_output_file(runtime: ToolRuntime[GraphState]) -> None:
     Creates a JSON output file from the parsed layout in the agent state.
     """
 
-    output_data = json.loads(runtime.state.get("parsed_layout", ''))
+    parsed_layout = runtime.state.get("parsed_layout", '')
+    if not parsed_layout:
+        parsed_layout = '[]'
+    output_data = json.loads(parsed_layout)
     with open("output_layout.json", "w", encoding="utf-8") as f:
         json.dump(output_data, f, indent= 4)
     
@@ -48,7 +72,15 @@ def create_json_output_file(runtime: ToolRuntime[GraphState]) -> None:
 def build_graph_agent():
     graph = create_agent(
         model= llm_model,
-        tools = [read_csv_tool, call_delimiter_parser_tool, create_json_output_file],
+        tools = [
+            read_csv_tool, 
+            read_flat_file_tool,
+            read_xml_tool,
+            call_delimiter_parser_tool, 
+            call_layout_parser_agent_tool,
+            call_iso20022_parser_tool,
+            create_json_output_file
+        ],
         middleware= [GraphStateMiddleware()],
         system_prompt= system_prompt
     )
@@ -57,7 +89,7 @@ def build_graph_agent():
 
 
 if __name__ == "__main__":
-    test_file_path = "test_samples/sample1.csv"
+    test_file_path = "test_samples/iso_test.xml"
     agent = build_graph_agent()
     response = agent.invoke({
         "messages": [

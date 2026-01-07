@@ -34,4 +34,53 @@ def read_json_file(file_path: str) -> dict:
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
     
+
+def read_flat_file(file_path: str) -> str:
+    """Reads a flat file and returns its content as raw text."""
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
+    
+
+@tool
+def read_flat_file_tool(runtime: ToolRuntime[GraphState]) -> Command:
+    """
+    Reads a flat file (.txt) and returns its content as raw text.
+    """
+    
+    raw_text = read_flat_file(runtime.state.get("file_path", ""))
+    if raw_text is not None:
+        return Command(update= {
+            "messages": [ToolMessage(content = "Successfully read flat file.", tool_call_id = runtime.tool_call_id)],
+            "file_content": raw_text
+        })
+    else:
+        return Command(update= {
+            "messages": [ToolMessage(content = "Failed to read flat file.", tool_call_id = runtime.tool_call_id)],
+        })
+    
+
+
+def read_xml_file_raw(file_path: str) -> str:
+    """Reads an XML file and returns its content as raw text."""
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
+    
+
+@tool
+def read_xml_tool(runtime: ToolRuntime[GraphState]) -> Command:
+    """
+    Reads an XML file and returns its content as raw text.
+    """
+    
+    raw_text = read_xml_file_raw(runtime.state.get("file_path", ""))
+    if raw_text is not None:
+        return Command(update= {
+            "messages": [ToolMessage(content = "Successfully read XML file.", tool_call_id = runtime.tool_call_id)],
+            "file_content": raw_text
+        })
+    else:
+        return Command(update= {
+            "messages": [ToolMessage(content = "Failed to read XML file.", tool_call_id = runtime.tool_call_id)],
+        })
+    
     

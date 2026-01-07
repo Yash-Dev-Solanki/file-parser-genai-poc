@@ -1,0 +1,42 @@
+{
+  "Header": {
+    "HeaderRecordType": "HH",
+    "HeaderProcessDate": "20251214"
+  },
+  "Rows": [
+    {
+      "RecordType": "03",
+      "ReferenceNumber": "0000000000000001",
+      "FullName": "John Doe",
+      "TransactionAmount": 123456
+    },
+    {
+      "RecordType": "03",
+      "ReferenceNumber": "0000000000000002",
+      "FullName": "Jane Smith",
+      "TransactionAmount": 7890
+    },
+    {
+      "RecordType": "03",
+      "ReferenceNumber": "ABCDEF1234567890",
+      "FullName": "Alice Johnson",
+      "TransactionAmount": 500
+    },
+    {
+      "RecordType": "03",
+      "ReferenceNumber": "FEDCBA0987654321",
+      "FullName": "Bob Lee",
+      "TransactionAmount": 9999999
+    },
+    {
+      "RecordType": "03",
+      "ReferenceNumber": "1234ABCD5678EF00",
+      "FullName": "Eve Martinez",
+      "TransactionAmount": 42
+    }
+  ],
+  "Footer": {
+    "FooterRecordType": "93",
+    "FooterChecksum": "A1B2C3D4"
+  }
+}
