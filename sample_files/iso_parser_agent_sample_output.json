@@ -1,0 +1,71 @@
+{
+  "message_type": {
+    "code": "pain.001.001.12",
+    "name": "Customer Credit Transfer Initiation"
+  },
+  "group_header": {
+    "message_id": "MSG001",
+    "creation_datetime": "2024-01-15T10:30:00",
+    "number_of_transactions": 1,
+    "control_sum": 1000.00,
+    "initiating_party": {
+      "name": "Initiating Company",
+      "organisation_id": {
+        "bic_or_bei": "DEUTDEFF"
+      }
+    }
+  },
+  "payment_information": [
+    {
+      "payment_info_id": "PMTINF001",
+      "payment_method": "TRF",
+      "number_of_transactions": 1,
+      "control_sum": 1000.00,
+      "payment_type_information": {
+        "instruction_priority": "NORM"
+      },
+      "requested_execution_date": "2024-01-16",
+      "debtor": {
+        "name": "Debtor Name",
+        "organisation_id": {
+          "bic_or_bei": "DEUTDEDB"
+        }
+      },
+      "debtor_account": {
+        "iban": "DE89370400440532013000"
+      },
+      "debtor_agent": {
+        "bic": "DEUTDEFF"
+      },
+      "credit_transfer_transactions": [
+        {
+          "payment_identification": {
+            "instruction_id": "INSTR001",
+            "end_to_end_id": "E2E001"
+          },
+          "amount": {
+            "instructed_amount": {
+              "currency": "EUR",
+              "value": 1000.00
+            }
+          },
+          "creditor_agent": {
+            "bic": "COBADEFF"
+          },
+          "creditor": {
+            "name": "Creditor Name",
+            "organisation_id": {
+              "bic_or_bei": "COBADEFF"
+            }
+          },
+          "creditor_account": {
+            "iban": "DE89370400440532013001"
+          },
+          "remittance_information": {
+            "unstructured": "Payment for Invoice INV-2024-001"
+          }
+        }
+      ]
+    }
+  ]
+}

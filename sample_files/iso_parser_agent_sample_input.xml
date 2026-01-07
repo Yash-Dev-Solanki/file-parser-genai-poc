@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.12">
+    <CstmrCdtTrfInitn>
+        <GrpHdr>
+            <MsgId>MSG001</MsgId>
+            <CreDtTm>2024-01-15T10:30:00</CreDtTm>
+            <NbOfTxns>1</NbOfTxns>
+            <CtrlSum>1000.00</CtrlSum>
+            <InitgPty>
+                <Nm>Initiating Company</Nm>
+                <Id>
+                    <OrgId>
+                        <BICOrBEI>DEUTDEFF</BICOrBEI>
+                    </OrgId>
+                </Id>
+            </InitgPty>
+        </GrpHdr>
+        <PmtInf>
+            <PmtInfId>PMTINF001</PmtInfId>
+            <PmtMtd>TRF</PmtMtd>
+            <NbOfTxns>1</NbOfTxns>
+            <CtrlSum>1000.00</CtrlSum>
+            <PmtTpInf>
+                <InstrPrty>NORM</InstrPrty>
+            </PmtTpInf>
+            <ReqdExctnDt>2024-01-16</ReqdExctnDt>
+            <Dbtr>
+                <Nm>Debtor Name</Nm>
+                <Id>
+                    <OrgId>
+                        <BICOrBEI>DEUTDEDB</BICOrBEI>
+                    </OrgId>
+                </Id>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <IBAN>DE89370400440532013000</IBAN>
+                </Id>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BIC>DEUTDEFF</BIC>
+                </FinInstnId>
+            </DbtrAgt>
+            <CdtTrfTxInf>
+                <PmtId>
+                    <InstrId>INSTR001</InstrId>
+                    <EndToEndId>E2E001</EndToEndId>
+                </PmtId>
+                <Amt>
+                    <InstdAmt Ccy="EUR">1000.00</InstdAmt>
+                </Amt>
+                <CdtrAgt>
+                    <FinInstnId>
+                        <BIC>COBADEFF</BIC>
+                    </FinInstnId>
+                </CdtrAgt>
+                <Cdtr>
+                    <Nm>Creditor Name</Nm>
+                    <Id>
+                        <OrgId>
+                            <BICOrBEI>COBADEFF</BICOrBEI>
+                        </OrgId>
+                    </Id>
+                </Cdtr>
+                <CdtrAcct>
+                    <Id>
+                        <IBAN>DE89370400440532013001</IBAN>
+                    </Id>
+                </CdtrAcct>
+                <RmtInf>
+                    <Ustrd>Payment for Invoice INV-2024-001</Ustrd>
+                </RmtInf>
+            </CdtTrfTxInf>
+        </PmtInf>
+    </CstmrCdtTrfInitn>
+</Document>
