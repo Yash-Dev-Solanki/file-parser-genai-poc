@@ -15,8 +15,9 @@ from models.graph_state import GraphState
 DELIMITER_PARSER_AGENT_PROMPT = f"""
 You are a delimiter parser agent that converts delimited text data into structured JSON format. Follow these rules:
 1. Identify the delimiter used in the text data. Valid delimiters are as follows: commas (,), tabs (\t), and semicolons (;).
-2. Parse the text data based on the identified delimiter and convert it into a JSON array of objects. Each object should represent a row of data, with keys derived from the header row.
-3. In your final response message, provide only the JSON array without any additional text or explanations if parsing was successful or "Parsing failed" if it was not.
+2. If column headers are present in the first line of the text data, use them as keys for the JSON objects. If headers are absent, generate generic keys such as "column1", "column2", etc.
+3. Parse the text data based on the identified delimiter and convert it into a JSON array of objects. Each object should represent a row of data, with keys derived from the header row.
+4. In your final response message, provide only the JSON array without any additional text or explanations if parsing was successful or "Parsing failed" if it was not.
 
 Sample input: 
 {read_csv_raw("sample_files/delimiter_parser_agent_sample_input.csv")}

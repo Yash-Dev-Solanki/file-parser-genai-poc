@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">
+  <FIToFICstmrCdtTrf>
+    <GrpHdr>
+      <MsgId>MSG20260107001</MsgId>
+      <CreDtTm>2026-01-07T10:30:00</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <SttlmInf>
+        <SttlmMtd>CLRG</SttlmMtd>
+      </SttlmInf>
+      <InstgAgt>
+        <FinInstnId>
+          <BICFI>HDFCINBBXXX</BICFI>
+        </FinInstnId>
+      </InstgAgt>
+      <InstdAgt>
+        <FinInstnId>
+          <BICFI>SBININBBXXX</BICFI>
+        </FinInstnId>
+      </InstdAgt>
+    </GrpHdr>
+
+    <!-- Credit Transfer Transaction -->
+    <CdtTrfTxInf>
+      <PmtId>
+        <InstrId>INST20260107001</InstrId>
+        <EndToEndId>E2E20260107001</EndToEndId>
+        <TxId>TX20260107001</TxId>
+      </PmtId>
+
+      <IntrBkSttlmAmt Ccy="INR">25000.00</IntrBkSttlmAmt>
+      <IntrBkSttlmDt>2026-01-07</IntrBkSttlmDt>
+
+      <Dbtr>
+        <Nm>ABC Corporation Pvt Ltd</Nm>
+      </Dbtr>
+
+      <DbtrAcct>
+        <Id>
+          <Othr>
+            <Id>123456789012</Id>
+          </Othr>
+        </Id>
+      </DbtrAcct>
+
+      <DbtrAgt>
+        <FinInstnId>
+          <BICFI>HDFCINBBXXX</BICFI>
+        </FinInstnId>
+      </DbtrAgt>
+
+      <CdtrAgt>
+        <FinInstnId>
+          <BICFI>SBININBBXXX</BICFI>
+        </FinInstnId>
+      </CdtrAgt>
+
+      <Cdtr>
+        <Nm>XYZ Solutions Ltd</Nm>
+      </Cdtr>
+
+      <CdtrAcct>
+        <Id>
+          <Othr>
+            <Id>987654321098</Id>
+          </Othr>
+        </Id>
+      </CdtrAcct>
+
+      <RmtInf>
+        <Ustrd>Invoice INV-2026-001</Ustrd>
+      </RmtInf>
+    </CdtTrfTxInf>
+
+  </FIToFICstmrCdtTrf>
+</Document>

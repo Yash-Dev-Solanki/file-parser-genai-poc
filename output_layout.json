@@ -1,7 +1,7 @@
 {
     "message_type": {
         "code": "pacs.008.001.08",
-        "name": "Financial Institution To Financial Institution Customer Credit Transfer"
+        "name": "FI To FI Customer Credit Transfer"
     },
     "group_header": {
         "message_id": "MSG20260107001",
@@ -11,14 +11,10 @@
             "settlement_method": "CLRG"
         },
         "instructing_agent": {
-            "financial_institution_identification": {
-                "bicfi": "HDFCINBBXXX"
-            }
+            "bic": "HDFCINBBXXX"
         },
         "instructed_agent": {
-            "financial_institution_identification": {
-                "bicfi": "SBININBBXXX"
-            }
+            "bic": "SBININBBXXX"
         }
     },
     "credit_transfer_transactions": [
@@ -42,14 +38,10 @@
                 }
             },
             "debtor_agent": {
-                "financial_institution_identification": {
-                    "bicfi": "HDFCINBBXXX"
-                }
+                "bic": "HDFCINBBXXX"
             },
             "creditor_agent": {
-                "financial_institution_identification": {
-                    "bicfi": "SBININBBXXX"
-                }
+                "bic": "SBININBBXXX"
             },
             "creditor": {
                 "name": "XYZ Solutions Ltd"

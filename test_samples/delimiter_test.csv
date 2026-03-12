@@ -1,4 +1,4 @@
-Name;Email;Age;Department;Salary;StartDate;Status
+Name;Email;Age;Department;Salary;Joining Date;Status
 John Smith;john.smith@company.com;32;Engineering;85000;2020-01-15;Active
 Sarah Johnson;sarah.johnson@company.com;28;Marketing;72000;2021-03-22;Active
 Michael Brown;michael.brown@company.com;45;Finance;95000;2018-06-10;Active

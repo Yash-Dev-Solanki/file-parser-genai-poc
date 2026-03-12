@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv()) 
 from pydantic import SecretStr
@@ -23,15 +24,12 @@ llm_model = ChatOpenAI(temperature=0, model_name="gpt-4o", api_key= SecretStr(os
 system_prompt = f"""
 You are a file parser agent that helps users generate a json layout file from the input data based on a set of predefined rules.
 These rules are as follows:
-1. Identify the type of data based on the path of the input file. If the file path extension is not supported, respond with "Unsupported file format".
+1. You will be provided the path of a input file. If the file path format is not supported, respond with "Unsupported file format".
 2. Read the contents of the input file as raw text using the appropriate tools.
 3. Analyze the contents of the file and route the data to the relevant parsing agent. If you're not able to determine the appropriate parsing agent, respond with "Unable to determine parsing agent".
 4. On the basis of response from the parsing agent, produce a final json layout file that adheres to the specified structure and formatting guidelines.
 5. In the end, create a json output file that contains the generated layout.
 
-
-
-Supported file formats: ['csv', 'txt', 'xml']
 
 Supported parsing agents: [
     {{
@@ -39,7 +37,7 @@ Supported parsing agents: [
         "file_type": "csv",
         "description": "Parses delimited text files such as CSV files into structured JSON format. Supports a set of common delimiters including commas, tabs, and semicolons."
         "sample_input_file_content": {read_csv_raw("sample_files/delimiter_parser_agent_sample_input.csv")},
-    }}
+    }},
     {{
         "tool_name": "layout_parser",
         "file_type": "txt",
@@ -55,15 +53,19 @@ Supported parsing agents: [
 ]"""
 
 
-@tool
+@tool(name_or_callable= "CreateJSONOutputFile")
 def create_json_output_file(runtime: ToolRuntime[GraphState]) -> None:
     """
     Creates a JSON output file from the parsed layout in the agent state.
     """
 
     parsed_layout = runtime.state.get("parsed_layout", '')
-    if not parsed_layout:
-        parsed_layout = '[]'
+    if not parsed_layout or parsed_layout.casefold() == 'PARSING FAILED'.casefold():
+        with open("output_layout.json", "w", encoding="utf-8") as f:
+            json.dump({"error": "Parsing failed"}, f, indent=4)
+        
+        return
+    
     output_data = json.loads(parsed_layout)
     with open("output_layout.json", "w", encoding="utf-8") as f:
         json.dump(output_data, f, indent= 4)
@@ -88,10 +90,30 @@ def build_graph_agent():
     return graph
 
 
-if __name__ == "__main__":
-    test_file_path = "test_samples/iso_test.xml"
+def call_parser_agent(file_path) -> str:
     agent = build_graph_agent()
-    response = agent.invoke({
+    graph_input = {
+        "messages": [
+            {
+                "role": "user",
+                "content": f"Parse the input file path {file_path} and generate a json layout file according to the predefined rules."
+            }
+        ], 
+        "file_path": file_path,
+        "file_content": "",
+        "parsed_layout": []
+    }
+
+    response = agent.invoke(graph_input)
+    return response["parsed_layout"]
+
+
+
+# Keep for langchain agent testing purpose
+async def main():
+    test_file_path = "test_samples/positional_layout_test.txt"
+    agent = build_graph_agent()
+    graph_input = {
         "messages": [
             {
                 "role": "user",
@@ -101,4 +123,18 @@ if __name__ == "__main__":
         "file_path": test_file_path,
         "file_content": "",
         "parsed_layout": []
-    })
+    }
+
+    async for event in agent.astream_events(graph_input):
+        event_type = event["event"]
+        
+        if event_type == "on_tool_start":
+            print(f"Calling Tool: {event['name']}")
+            print("Tool execution started...")
+
+        elif event_type == "on_tool_end":
+            print("Tool execution completed.")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
