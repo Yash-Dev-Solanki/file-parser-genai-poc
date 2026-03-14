@@ -1,42 +1,34 @@
 {
-  "Header": {
+  "table": "ebox",
+  "header": {
     "HeaderRecordType": "HH",
-    "HeaderProcessDate": "20251214"
+    "HeaderProcessDate": "20251214",
+    "HeaderTime": "143022",
+    "ReferenceNumber": "REF0001234"
   },
-  "Rows": [
+  "rows": [
     {
       "RecordType": "03",
-      "ReferenceNumber": "0000000000000001",
-      "FullName": "John Doe",
-      "TransactionAmount": 123456
+      "OfficeNumber": "123456",
+      "Agent": "ABCDEF",
+      "EffectiveDate": "20251214",
+      "TransactionTime": "143022",
+      "TransactionDate": "20251214",
+      "FullName": "John Doe"
     },
     {
       "RecordType": "03",
-      "ReferenceNumber": "0000000000000002",
-      "FullName": "Jane Smith",
-      "TransactionAmount": 7890
-    },
-    {
-      "RecordType": "03",
-      "ReferenceNumber": "ABCDEF1234567890",
-      "FullName": "Alice Johnson",
-      "TransactionAmount": 500
-    },
-    {
-      "RecordType": "03",
-      "ReferenceNumber": "FEDCBA0987654321",
-      "FullName": "Bob Lee",
-      "TransactionAmount": 9999999
-    },
-    {
-      "RecordType": "03",
-      "ReferenceNumber": "1234ABCD5678EF00",
-      "FullName": "Eve Martinez",
-      "TransactionAmount": 42
+      "OfficeNumber": "654321",
+      "Agent": "FEDCBA",
+      "EffectiveDate": "20251215",
+      "TransactionTime": "091530",
+      "TransactionDate": "20251214",
+      "FullName": "Jane Smith"
     }
   ],
-  "Footer": {
+  "footer": {
     "FooterRecordType": "93",
-    "FooterChecksum": "A1B2C3D4"
+    "FooterAmount": "000002469134",
+    "FooterAmount_parsed": 24691.34
   }
 }

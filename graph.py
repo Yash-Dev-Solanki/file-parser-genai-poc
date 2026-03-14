@@ -7,6 +7,7 @@ from pydantic import SecretStr
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 from langchain.tools import tool, ToolRuntime
+from langchain_community.callbacks import StreamlitCallbackHandler
 from models.graph_state import GraphState, GraphStateMiddleware
 from file_readers import (
     read_csv_raw, 
@@ -20,15 +21,15 @@ from agents.delimiter_parser_agent import call_delimiter_parser_tool
 from agents.positional_parser_agent import call_layout_parser_agent_tool
 from agents.iso20022_parser_agent import call_iso20022_parser_tool
 
-llm_model = ChatOpenAI(temperature=0, model_name="gpt-4o", api_key= SecretStr(os.getenv("OPENAI_API_KEY", "")))
+llm_model = ChatOpenAI(temperature=0, model_name="gpt-5.2", reasoning_effort= "low", api_key= SecretStr(os.getenv("OPENAI_API_KEY", "")))
 system_prompt = f"""
 You are a file parser agent that helps users generate a json layout file from the input data based on a set of predefined rules.
 These rules are as follows:
 1. You will be provided the path of a input file. If the file path format is not supported, respond with "Unsupported file format".
 2. Read the contents of the input file as raw text using the appropriate tools.
 3. Analyze the contents of the file and route the data to the relevant parsing agent. If you're not able to determine the appropriate parsing agent, respond with "Unable to determine parsing agent".
-4. On the basis of response from the parsing agent, produce a final json layout file that adheres to the specified structure and formatting guidelines.
-5. In the end, create a json output file that contains the generated layout.
+4. On the basis of response from the parsing agent, produce a final json string layout file that adheres to the specified structure and formatting guidelines.
+5. In the end, call the CreateJSONOutputFile tool to save the output in a json file.
 
 
 Supported parsing agents: [
@@ -66,31 +67,41 @@ def create_json_output_file(runtime: ToolRuntime[GraphState]) -> None:
         
         return
     
-    output_data = json.loads(parsed_layout)
+    # Strip markdown code fences if the LLM wrapped the JSON
+    cleaned = parsed_layout.strip()
+    if cleaned.startswith("```"):
+        lines = cleaned.splitlines()
+        # Remove first line (```json or ```) and last line (```)
+        cleaned = "\n".join(lines[1:-1]).strip()
+
+    output_data = json.loads(cleaned)
     with open("output_layout.json", "w", encoding="utf-8") as f:
         json.dump(output_data, f, indent= 4)
     
 
 def build_graph_agent():
+    agent_tools = [
+        read_csv_tool, 
+        read_flat_file_tool,
+        read_xml_tool,
+        call_delimiter_parser_tool, 
+        call_layout_parser_agent_tool,
+        call_iso20022_parser_tool,
+        create_json_output_file
+    ]
+    
     graph = create_agent(
         model= llm_model,
-        tools = [
-            read_csv_tool, 
-            read_flat_file_tool,
-            read_xml_tool,
-            call_delimiter_parser_tool, 
-            call_layout_parser_agent_tool,
-            call_iso20022_parser_tool,
-            create_json_output_file
-        ],
+        tools = agent_tools,
         middleware= [GraphStateMiddleware()],
         system_prompt= system_prompt
     )
-
+    
     return graph
 
 
-def call_parser_agent(file_path) -> str:
+# Streams response from an agent executor call to the StreamlitCallbackHandler
+def call_parser_agent(file_path, callback_handler: StreamlitCallbackHandler = None):
     agent = build_graph_agent()
     graph_input = {
         "messages": [
@@ -104,7 +115,7 @@ def call_parser_agent(file_path) -> str:
         "parsed_layout": []
     }
 
-    response = agent.invoke(graph_input)
+    response = agent.invoke(graph_input, {"callbacks": [callback_handler]})
     return response["parsed_layout"]
 
 

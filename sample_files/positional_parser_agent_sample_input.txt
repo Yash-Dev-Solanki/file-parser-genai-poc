@@ -1,8 +1,40 @@
-HH20251214
-030000000000000001John Doe                                0000123456
-030000000000000002Jane Smith                              0000007890
-03ABCDEF1234567890Alice Johnson                           0000000500
-03FEDCBA0987654321Bob Lee                                 0000999999
-031234ABCD5678EF00Eve Martinez                            0000000042
-93A1B2C3D4
+FileContent:
+HH20251214143022REF0001234
+03123456ABCDEF20251214143022               John Doe                      
+03654321FEDCBA20251215091530               Jane Smith                    
+93000002469134
+
+Columns:
+[
+    {"cid": 0, "name": "id", "type": "INTEGER", "notnull": false, "is_primary_key": true, "default_value": null},
+    {"cid": 1, "name": "HeaderRecordType", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 2, "name": "HeaderProcessDate", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 3, "name": "HeaderTime", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 4, "name": "ReferenceNumber", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 5, "name": "RecordType", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 6, "name": "OfficeNumber", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 7, "name": "Agent", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 8, "name": "EffectiveDate", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 9, "name": "TransactionTime", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 10, "name": "FullName", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 11, "name": "FooterRecordType", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null},
+    {"cid": 12, "name": "FooterAmount", "type": "TEXT", "notnull": true, "is_primary_key": false, "default_value": null}
+]
+
+Metadata:
+[
+    {"column_name": "HeaderRecordType", "start_pos": 0, "length": 2, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "HeaderProcessDate", "start_pos": 2, "length": 14, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "HeaderTime", "start_pos": 10, "length": 6, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "ReferenceNumber", "start_pos": 16, "length": 10, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "RecordType", "start_pos": 0, "length": 2, "validations": "FixedValueOf:03", "is_decimal": false, "decimal_pos": null},
+    {"column_name": "OfficeNumber", "start_pos": 2, "length": 6, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "Agent", "start_pos": 8, "length": 6, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "EffectiveDate", "start_pos": 14, "length": 14, "validations": "IsNotEmpty", "is_decimal": false, "decimal_pos": null},
+    {"column_name": "TransactionTime", "start_pos": 22, "length": 6, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "TransactionDate", "start_pos": null, "length": null, "validations": "valueRef:HeaderProcessDate", "is_decimal": false, "decimal_pos": null},
+    {"column_name": "FullName", "start_pos": 43, "length": 30, "validations": null, "is_decimal": false, "decimal_pos": null},
+    {"column_name": "FooterRecordType", "start_pos": 0, "length": 2, "validations": "FixedValueOf:93", "is_decimal": false, "decimal_pos": null},
+    {"column_name": "FooterAmount", "start_pos": 2, "length": 12, "validations": "IsNotEmpty|ConatinsOnlyCurrency", "is_decimal": true, "decimal_pos": 2}
+]
 

@@ -1,59 +1,27 @@
 {
-    "message_type": {
-        "code": "pacs.008.001.08",
-        "name": "FI To FI Customer Credit Transfer"
+    "table": "snecko_minimal",
+    "header": {
+        "HeaderRecordType": "HH",
+        "HeaderProcessDate": "20251214"
     },
-    "group_header": {
-        "message_id": "MSG20260107001",
-        "creation_datetime": "2026-01-07T10:30:00",
-        "number_of_transactions": 1,
-        "settlement_information": {
-            "settlement_method": "CLRG"
-        },
-        "instructing_agent": {
-            "bic": "HDFCINBBXXX"
-        },
-        "instructed_agent": {
-            "bic": "SBININBBXXX"
-        }
-    },
-    "credit_transfer_transactions": [
+    "rows": [
         {
-            "payment_identification": {
-                "instruction_id": "INST20260107001",
-                "end_to_end_id": "E2E20260107001",
-                "transaction_id": "TX20260107001"
-            },
-            "interbank_settlement_amount": {
-                "currency": "INR",
-                "value": 25000.0
-            },
-            "interbank_settlement_date": "2026-01-07",
-            "debtor": {
-                "name": "ABC Corporation Pvt Ltd"
-            },
-            "debtor_account": {
-                "other": {
-                    "id": "123456789012"
-                }
-            },
-            "debtor_agent": {
-                "bic": "HDFCINBBXXX"
-            },
-            "creditor_agent": {
-                "bic": "SBININBBXXX"
-            },
-            "creditor": {
-                "name": "XYZ Solutions Ltd"
-            },
-            "creditor_account": {
-                "other": {
-                    "id": "987654321098"
-                }
-            },
-            "remittance_information": {
-                "unstructured": "Invoice INV-2026-001"
-            }
+            "RecordType": "03",
+            "ReferenceNumber": "1234567890ABCDEF",
+            "FullName": "John Doe",
+            "TransactionAmount": "0000123456",
+            "TransactionAmount_parsed": 1234.56
+        },
+        {
+            "RecordType": "03",
+            "ReferenceNumber": "FEDCBA0987654321",
+            "FullName": "Jane Smith",
+            "TransactionAmount": "0000007890",
+            "TransactionAmount_parsed": 78.9
         }
-    ]
+    ],
+    "footer": {
+        "FooterRecordType": "93",
+        "FooterChecksum": "A1B2C3D4"
+    }
 }

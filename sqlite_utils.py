@@ -7,9 +7,9 @@ layouts_cursor = conn_layouts.cursor()
 conn_metadata = sqlite3.connect('Metadata.db')
 metadata_cursor = conn_metadata.cursor()
 
-# ── ebox ──────────────────────────────────────────────────────────────
+# ── snecko ──────────────────────────────────────────────────────────────
 layouts_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox (
+CREATE TABLE IF NOT EXISTS snecko (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     HeaderRecordType TEXT NOT NULL,
     HeaderProcessDate TEXT NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS ebox (
 conn_layouts.commit()
 
 metadata_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_column_meta (
+CREATE TABLE IF NOT EXISTS snecko_column_meta (
     column_name     TEXT    PRIMARY KEY,
     start_pos       INTEGER,
     length          INTEGER,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS ebox_column_meta (
 conn_metadata.commit()
 
 metadata_cursor.executemany("""
-INSERT OR IGNORE INTO ebox_column_meta (column_name, start_pos, length, validations, is_decimal, decimal_pos) VALUES (?, ?, ?, ?, ?, ?)
+INSERT OR IGNORE INTO snecko_column_meta (column_name, start_pos, length, validations, is_decimal, decimal_pos) VALUES (?, ?, ?, ?, ?, ?)
 """, [
     ('HeaderRecordType',  0,    2,    None,                              False, None),
     ('HeaderProcessDate', 2,    14,   None,                              False, None),
@@ -60,9 +60,9 @@ INSERT OR IGNORE INTO ebox_column_meta (column_name, start_pos, length, validati
 ])
 conn_metadata.commit()
 
-# ── ebox_sample1 ──────────────────────────────────────────────────────────────
+# ── snecko_sample1 ──────────────────────────────────────────────────────────────
 layouts_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_sample1 (
+CREATE TABLE IF NOT EXISTS snecko_sample1 (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     HeaderRecordType    TEXT NOT NULL CHECK(HeaderRecordType = '01'),
     HeaderProcessDate   TEXT NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS ebox_sample1 (
 conn_layouts.commit()
 
 metadata_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_sample1_column_meta (
+CREATE TABLE IF NOT EXISTS snecko_sample1_column_meta (
     column_name     TEXT    PRIMARY KEY,
     start_pos       INTEGER,
     length          INTEGER,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS ebox_sample1_column_meta (
 conn_metadata.commit()
 
 metadata_cursor.executemany("""
-INSERT OR IGNORE INTO ebox_sample1_column_meta
+INSERT OR IGNORE INTO snecko_sample1_column_meta
     (column_name, start_pos, length, validations, is_decimal, decimal_pos) VALUES (?, ?, ?, ?, ?, ?)
 """, [
     ('HeaderRecordType',  0,    2,    'FixedValueOf:01',                  False, None),
@@ -117,9 +117,9 @@ INSERT OR IGNORE INTO ebox_sample1_column_meta
 ])
 conn_metadata.commit()
 
-# ── ebox_minimal ───────────────────────────────────────────────────────────────
+# ── snecko_minimal ───────────────────────────────────────────────────────────────
 layouts_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_minimal (
+CREATE TABLE IF NOT EXISTS snecko_minimal (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     HeaderRecordType    TEXT NOT NULL CHECK(HeaderRecordType = 'HH'),
     HeaderProcessDate   TEXT NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS ebox_minimal (
 conn_layouts.commit()
 
 metadata_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_minimal_column_meta (
+CREATE TABLE IF NOT EXISTS snecko_minimal_column_meta (
     column_name     TEXT    PRIMARY KEY,
     start_pos       INTEGER,
     length          INTEGER,
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS ebox_minimal_column_meta (
 conn_metadata.commit()
 
 metadata_cursor.executemany("""
-INSERT OR IGNORE INTO ebox_minimal_column_meta
+INSERT OR IGNORE INTO snecko_minimal_column_meta
     (column_name, start_pos, length, validations, is_decimal, decimal_pos) VALUES (?, ?, ?, ?, ?, ?)
 """, [
     ('HeaderRecordType',  0,    2,    'FixedValueOf:HH',                  False, None),
@@ -154,15 +154,15 @@ INSERT OR IGNORE INTO ebox_minimal_column_meta
     ('RecordType',        0,    2,    'FixedValueOf:03',                  False, None),
     ('ReferenceNumber',   2,    16,   None,                               False, None),
     ('FullName',          18,   40,   None,                               False, None),
-    ('TransactionAmount', 58,   10,   'Numeric',                          True,  0),
+    ('TransactionAmount', 58,   10,   'Numeric',                          True,  2),
     ('FooterRecordType',  0,    2,    'FixedValueOf:93',                  False, None),
     ('FooterChecksum',    2,    8,    'MatchesRegex:^[A-F0-9]{8}$',       False, None),
 ])
 conn_metadata.commit()
 
-# ── ebox_variation2 ────────────────────────────────────────────────────────────
+# ── snecko_variation2 ────────────────────────────────────────────────────────────
 layouts_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_variation2 (
+CREATE TABLE IF NOT EXISTS snecko_variation2 (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     HeaderRecordType    TEXT NOT NULL CHECK(HeaderRecordType = '01'),
     HeaderProcessDate   TEXT NOT NULL,
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS ebox_variation2 (
 conn_layouts.commit()
 
 metadata_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_variation2_column_meta (
+CREATE TABLE IF NOT EXISTS snecko_variation2_column_meta (
     column_name     TEXT    PRIMARY KEY,
     start_pos       INTEGER,
     length          INTEGER,
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS ebox_variation2_column_meta (
 conn_metadata.commit()
 
 metadata_cursor.executemany("""
-INSERT OR IGNORE INTO ebox_variation2_column_meta
+INSERT OR IGNORE INTO snecko_variation2_column_meta
     (column_name, start_pos, length, validations, is_decimal, decimal_pos) VALUES (?, ?, ?, ?, ?, ?)
 """, [
     ('HeaderRecordType',  0,    2,    'FixedValueOf:01',                          False, None),
@@ -217,9 +217,9 @@ INSERT OR IGNORE INTO ebox_variation2_column_meta
 ])
 conn_metadata.commit()
 
-# ── ebox_extended ──────────────────────────────────────────────────────────────
+# ── snecko_extended ──────────────────────────────────────────────────────────────
 layouts_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_extended (
+CREATE TABLE IF NOT EXISTS snecko_extended (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     HeaderRecordType    TEXT NOT NULL CHECK(HeaderRecordType = 'HD'),
     HeaderProcessDate   TEXT NOT NULL,
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS ebox_extended (
 conn_layouts.commit()
 
 metadata_cursor.execute("""
-CREATE TABLE IF NOT EXISTS ebox_extended_column_meta (
+CREATE TABLE IF NOT EXISTS snecko_extended_column_meta (
     column_name     TEXT    PRIMARY KEY,
     start_pos       INTEGER,
     length          INTEGER,
@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS ebox_extended_column_meta (
 conn_metadata.commit()
 
 metadata_cursor.executemany("""
-INSERT OR IGNORE INTO ebox_extended_column_meta
+INSERT OR IGNORE INTO snecko_extended_column_meta
     (column_name, start_pos, length, validations, is_decimal, decimal_pos) VALUES (?, ?, ?, ?, ?, ?)
 """, [
     ('HeaderRecordType',  0,    2,    'FixedValueOf:HD',                              False, None),
@@ -291,10 +291,10 @@ for name, sql in layouts_cursor.fetchall():
     print(type(sql))
 
 
-layouts_cursor.execute("PRAGMA table_info(ebox);")
+layouts_cursor.execute("PRAGMA table_info(snecko);")
 print(layouts_cursor.fetchall())
 
-metadata_cursor.execute('SELECT * FROM ebox_column_meta;')
+metadata_cursor.execute('SELECT * FROM snecko_column_meta;')
 print(metadata_cursor.fetchall())
 
 conn_layouts.close()

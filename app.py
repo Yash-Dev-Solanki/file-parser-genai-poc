@@ -1,8 +1,8 @@
 import streamlit as st
 import os
-import json
 from graph import call_parser_agent
 from models.streamlit_models import ParsingRequest
+from langchain_community.callbacks import StreamlitCallbackHandler
 
 if __name__ == "__main__":
     st.title("Graph Agent for File Parsing")
@@ -32,16 +32,18 @@ if __name__ == "__main__":
                 parsed_layout= ''
             ))
             with st.spinner("Parsing file..."):
-                parsed_layout = call_parser_agent(saved_file_path)
+                st_callback = StreamlitCallbackHandler(st.container())
+                parsed_layout = call_parser_agent(saved_file_path, callback_handler= st_callback)
                 st.session_state["parsing_requests"][-1].parsed_layout = parsed_layout
             
             st.text_area("File Content", value=file_content, height=300)
             with st.container(border= True, height=400):
                 st.subheader("Parsed Layout")
                 st.json(parsed_layout)
-    
-    
-    
+            
+            # Remove the temporarily saved file after processing
+            #os.remove(saved_file_path)
+
     # parsing_requests_tabs = st.tabs(f"{request['file_name']}" for request in st.session_state["parsing_requests"])
     # for request, tab in zip(st.session_state["parsing_requests"], parsing_requests_tabs):
     #     with tab:
