@@ -1,5 +1,5 @@
 {
-    "table": "snecko_minimal",
+    "table": "snecko_extra",
     "header": {
         "HeaderRecordType": "HH",
         "HeaderProcessDate": "20251214"
@@ -10,7 +10,7 @@
             "ReferenceNumber": "1234567890ABCDEF",
             "FullName": "John Doe",
             "TransactionAmount": "0000123456",
-            "TransactionAmount_parsed": 1234.56
+            "TransactionAmount_parsed": 12345.56
         },
         {
             "RecordType": "03",
@@ -22,6 +22,8 @@
     ],
     "footer": {
         "FooterRecordType": "93",
-        "FooterChecksum": "A1B2C3D4"
+        "FooterChecksum": "A1B2C3D4",
+        "FooterScore": "9900",
+        "FooterScore_parsed": 9900
     }
 }

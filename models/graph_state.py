@@ -15,6 +15,7 @@ class GraphState(AgentState):
     file_content: str
     parsed_layout: str
     warnings: list[Warning]
+    thread_id: str
 
 
 

@@ -1,0 +1,159 @@
+{
+  "table_name": "snecko_extra",
+  "columns": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "is_primary_key": true,
+      "default_value": null
+    },
+    {
+      "cid": 1,
+      "name": "HeaderRecordType",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 2,
+      "name": "HeaderProcessDate",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 3,
+      "name": "RecordType",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 4,
+      "name": "ReferenceNumber",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 5,
+      "name": "FullName",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 6,
+      "name": "TransactionAmount",
+      "type": "TEXT",
+      "notnull": false,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 7,
+      "name": "FooterRecordType",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 8,
+      "name": "FooterChecksum",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    },
+    {
+      "cid": 9,
+      "name": "FooterScore",
+      "type": "TEXT",
+      "notnull": true,
+      "is_primary_key": false,
+      "default_value": null
+    }
+  ],
+  "metadata": [
+    {
+      "column_name": "HeaderRecordType",
+      "start_pos": 0,
+      "length": 2,
+      "validations": "FixedValueOf:HH",
+      "is_decimal": false,
+      "decimal_pos": null
+    },
+    {
+      "column_name": "HeaderProcessDate",
+      "start_pos": 2,
+      "length": 8,
+      "validations": null,
+      "is_decimal": false,
+      "decimal_pos": null
+    },
+    {
+      "column_name": "RecordType",
+      "start_pos": 0,
+      "length": 2,
+      "validations": "FixedValueOf:03",
+      "is_decimal": false,
+      "decimal_pos": null
+    },
+    {
+      "column_name": "ReferenceNumber",
+      "start_pos": 2,
+      "length": 16,
+      "validations": null,
+      "is_decimal": false,
+      "decimal_pos": null
+    },
+    {
+      "column_name": "FullName",
+      "start_pos": 18,
+      "length": 40,
+      "validations": null,
+      "is_decimal": false,
+      "decimal_pos": null
+    },
+    {
+      "column_name": "TransactionAmount",
+      "start_pos": 58,
+      "length": 10,
+      "validations": "Numeric",
+      "is_decimal": true,
+      "decimal_pos": 2
+    },
+    {
+      "column_name": "FooterRecordType",
+      "start_pos": 0,
+      "length": 2,
+      "validations": "FixedValueOf:93",
+      "is_decimal": false,
+      "decimal_pos": null
+    },
+    {
+      "column_name": "FooterChecksum",
+      "start_pos": 2,
+      "length": 8,
+      "validations": "MatchesRegex:^[A-F0-9]{8}$",
+      "is_decimal": false,
+      "decimal_pos": null
+    },
+    {
+      "column_name": "FooterScore",
+      "start_pos": 10,
+      "length": 4,
+      "validations": "Numeric",
+      "is_decimal": true,
+      "decimal_pos": 0
+    }
+  ]
+}

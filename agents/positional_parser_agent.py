@@ -10,12 +10,15 @@ from langchain.tools import tool, ToolRuntime
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-from langgraph.types import Command
+from langgraph.types import Command, interrupt
 from langchain.messages import ToolMessage
 from file_readers import read_flat_file, read_json_file
 from models.graph_state import GraphState
+from models.positional_parser_private_state import PositionalParserPrivateState, PositionalParserAgentStateMiddleware
 from models.layouts_schema import Layout, LayoutColumn, ColumnMetadata
+from models.checkpointer import shared_checkpointer
 import sqlite3
+from interrupts.get_layout_schema_from_user import get_layout_schema_from_user
 
 
 MATCHING_PROMPT = """
@@ -83,12 +86,25 @@ layout_matching_prompt_template = PromptTemplate.from_template(MATCHING_PROMPT)
 layout_structuring_prompt_template = PromptTemplate.from_template(LAYOUT_STRUCTURING_PROMPT)
 sql_generation_prompt_template = PromptTemplate.from_template(SQL_GENERATION_PROMPT)
 
+# Keep track of the layout_json in a global variable to avoid rerunning tool after interrupt resumes
+_layout_json: str | None = None
+
 
 def _validate_and_return_json(inputs: dict) -> str:
     """
     Calls insert_layout_into_table with the generated SQL query.
     Returns the parsed JSON string only if the insert succeeds; raises ValueError otherwise.
+    Skip call if table does not exist in the database, which means the layout is user-defined.
     """
+    # Check validity of the table name
+    with sqlite3.connect("Layouts.db") as layouts_db_connection:
+        layouts_cursor = layouts_db_connection.cursor()
+        layouts_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?;", (inputs["table_name"],))
+        if layouts_cursor.fetchone() is None:
+            print(f"Table {inputs['table_name']} does not exist in Layouts.db. Assuming user-defined layout and skipping DB insert.")
+            return inputs["parsed_json"]
+    
+    
     result = insert_layout_into_table.invoke({
         "sql_query": inputs["sql_query"],
         "table_name": inputs["table_name"]
@@ -174,6 +190,7 @@ def insert_layout_into_table(sql_query: str, table_name: str) -> str:
     Inserts a new layout schema into the Layouts.db SQLite database.
     If the operation is successful, it returns a success message. If there's an error during insertion, it returns an error message with details.
     """
+    
     with sqlite3.connect("Layouts.db") as layouts_db_connection:
         layouts_cursor = layouts_db_connection.cursor()
         try:
@@ -202,7 +219,7 @@ def call_layout_matching_tool(header: str, datarow: str, footer: str, layout: La
     return response.text.strip()
 
 @tool
-def get_layout(header: str, datarow: str, footer: str) -> str:
+def get_layout(header: str, datarow: str, footer: str, runtime: ToolRuntime[PositionalParserPrivateState]) -> str:
     """
     Fetches the layout table from the database that matches the provided data point using the layout matching model.
 
@@ -210,8 +227,11 @@ def get_layout(header: str, datarow: str, footer: str) -> str:
     datarow(str): The first datarow of the flat file
     footer(str): The footer of the flat file
     """
+
+    global _layout_json
     layout_generator = get_next_layout()
-    while True:
+    # Check if layout_json is already present in the state (from interrupt resume)
+    while _layout_json is None:
         try:
             layout = next(layout_generator, None)
             if layout is None:
@@ -226,43 +246,68 @@ def get_layout(header: str, datarow: str, footer: str) -> str:
 
             print(f"Matching tool result for layout {layout.table_name}: {result}")
             if result == "MATCH":
-                return (f"Found matching layout table: {layout.table_name}")
+                _layout_json = layout.model_dump_json()
+                break
 
         except StopIteration:
-            return "No matching layout found."
-            # Interrupt human in loop
-              
+            break
+
+
+    response = interrupt({
+        "layout_json": _layout_json,
+        "header": header,
+        "datarow": datarow,
+        "footer": footer,
+        "message": "No matching layout found in the database. Interrupting to fetch layout schema from user."
+    })
+    
+    _layout_json = response.get("layout_json", "")
+
+
+    if (_layout_json == ""):
+        print("User declined to provide a layout schema. Proceeding without a layout.")
+    else:
+        print("Received layout schema from user. Proceeding with structuring.")
+    
+    
+    return Command(update={
+        "messages": [ToolMessage(content = f"Layout retrieval finished", tool_call_id = runtime.tool_call_id)],
+        "layout_json": _layout_json
+    })
 
 
 @tool
-def structure_layout(file_contents: str, table_name: str) -> str:
+def structure_layout(file_contents: str, runtime: ToolRuntime[PositionalParserPrivateState]) -> Command:
     """
     Structures the layout based on the provided file contents.
 
     file_contents(str): The contents of the flat file that needs to be parsed and structured.
-    table_name(str): The name of the layout table that matched the file contents, which will be used to fetch the layout structure from the database for structuring the layout.
     """
-    try:
-        layout = get_layout_from_table(table_name)
-    except ValueError as e:
-        return str(e)
+    layout = runtime.state.get("layout_json", "")
 
     try:
-        return layout_structuring_chain.invoke({
-            "layout_structure": layout.model_dump_json(),
+        structuring_response = layout_structuring_chain.invoke({
+            "layout_structure": layout,
             "file_contents": file_contents,
             "input_flat_file": read_flat_file("sample_files/positional_parser_agent_sample_input.txt"),
             "sample_output_json": read_json_file("sample_files/positional_parser_agent_sample_output.json"),
-            "table_name": table_name,
+            "table_name": Layout.model_validate_json(layout).table_name if layout else "UNKNOWN_TABLE",
+        })
+        return Command(update={
+            "messages": [ToolMessage(content = f"Layout structuring finished.", tool_call_id = runtime.tool_call_id)],
+            "parsed_layout": structuring_response
         })
     except ValueError as e:
         return str(e)
 
 
+
 layout_parser_agent = create_agent(
     system_prompt= LAYOUT_PARSING_PROMPT,
     model= layout_parsing_master_llm_model,
-    tools= [get_layout, structure_layout]
+    tools= [get_layout, structure_layout],
+    middleware= [PositionalParserAgentStateMiddleware()],
+    checkpointer= shared_checkpointer
 )
 
 @tool 
@@ -271,19 +316,52 @@ def call_layout_parser_agent_tool(runtime: ToolRuntime[GraphState]) -> Command:
     Invokes the layout parser agent to parse the flat file and generate the layout.
     """
 
-    response = layout_parser_agent.invoke({
-        "messages": [
-            {
-                "role": "user",
-                "content": f"Parse the following file content:\n{runtime.state.get('file_content', '')}"
-            },
-        ],
-    }, context= {"matched_layout": "", "parsing_output": ""})
-
+    parent_thread_id = runtime.state.get("thread_id", "test_thread")
+    sub_thread_id = f"{parent_thread_id}::layout_parser"
+    config = {"configurable": {"thread_id": sub_thread_id}}
     
-    parsing_result = response["messages"][-1].text
 
-    return Command(update= {
+    response = layout_parser_agent.invoke(
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f"Parse the following file content:\n{runtime.state.get('file_content', '')}"
+                },
+            ],
+            "layout_json": None,
+            "parsed_layout": ""
+        }, 
+        config= config,
+    )
+
+    # Handle the interrupt to fetch user generated layout schema when no matching layout is found in the database
+    interrupt_data = {}
+    interrupts = response.get("__interrupt__") or []
+    if interrupts:
+        interrupt_data = interrupts[0].value if hasattr(interrupts[0], "value") else interrupts[0]
+
+    global _layout_json
+    _layout_json = interrupt_data.get("layout_json")
+    if _layout_json is None:
+        user_defined_layout = get_layout_schema_from_user(
+            interrupt_data.get("header", ""),
+            interrupt_data.get("datarow", ""),
+            interrupt_data.get("footer", ""),
+        )
+        resume_data = {"layout_json": user_defined_layout, "message": "Resuming agent execution after user interaction completion."}
+        _layout_json = user_defined_layout
+    else:
+        resume_data = {"layout_json": _layout_json, "message": "Matching layout found in database. Resuming agent execution with the matched layout."}
+
+    resumed_response = layout_parser_agent.invoke(
+        Command(resume=resume_data),
+        config=config,
+    )
+
+    parsing_result = resumed_response["parsed_layout"]
+
+    return Command(update={
         "messages": [ToolMessage(content = f"Layout parser agent response received.", tool_call_id = runtime.tool_call_id)],
         "parsed_layout": parsing_result
     })

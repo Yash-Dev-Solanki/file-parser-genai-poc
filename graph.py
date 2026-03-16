@@ -1,6 +1,7 @@
 import os
 import json
 import asyncio
+from uuid import uuid4
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv()) 
 from pydantic import SecretStr
@@ -20,6 +21,7 @@ from file_readers import (
 from agents.delimiter_parser_agent import call_delimiter_parser_tool
 from agents.positional_parser_agent import call_layout_parser_agent_tool
 from agents.iso20022_parser_agent import call_iso20022_parser_tool
+from models.checkpointer import shared_checkpointer
 
 llm_model = ChatOpenAI(temperature=0, model_name="gpt-5.2", reasoning_effort= "low", api_key= SecretStr(os.getenv("OPENAI_API_KEY", "")))
 system_prompt = f"""
@@ -89,12 +91,13 @@ def build_graph_agent():
         call_iso20022_parser_tool,
         create_json_output_file
     ]
-    
+     
     graph = create_agent(
         model= llm_model,
         tools = agent_tools,
         middleware= [GraphStateMiddleware()],
-        system_prompt= system_prompt
+        system_prompt= system_prompt,
+        checkpointer= shared_checkpointer
     )
     
     return graph
@@ -103,6 +106,7 @@ def build_graph_agent():
 # Streams response from an agent executor call to the StreamlitCallbackHandler
 def call_parser_agent(file_path, callback_handler: StreamlitCallbackHandler = None):
     agent = build_graph_agent()
+    thread_id = str(uuid4())
     graph_input = {
         "messages": [
             {
@@ -112,7 +116,8 @@ def call_parser_agent(file_path, callback_handler: StreamlitCallbackHandler = No
         ], 
         "file_path": file_path,
         "file_content": "",
-        "parsed_layout": []
+        "parsed_layout": [],
+        "thread_id": thread_id
     }
 
     response = agent.invoke(graph_input, {"callbacks": [callback_handler]})
@@ -124,6 +129,7 @@ def call_parser_agent(file_path, callback_handler: StreamlitCallbackHandler = No
 async def main():
     test_file_path = "test_samples/positional_layout_test.txt"
     agent = build_graph_agent()
+    thread_id = str(uuid4())
     graph_input = {
         "messages": [
             {
@@ -133,10 +139,12 @@ async def main():
         ], 
         "file_path": test_file_path,
         "file_content": "",
-        "parsed_layout": []
+        "parsed_layout": [],
+        "thread_id": thread_id
     }
 
-    async for event in agent.astream_events(graph_input):
+    config = {"configurable": {"thread_id": thread_id}}
+    async for event in agent.astream_events(graph_input, config=config):
         event_type = event["event"]
         
         if event_type == "on_tool_start":
